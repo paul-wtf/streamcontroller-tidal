@@ -24,7 +24,7 @@ class CopyTidalLinkAction(ActionBase):
             logger.warning("CopyTidalLinkAction: Kein Track-URL verfügbar")
             return
 
-        # Versuche direkten Tidal-Link; als Fallback Odesli nutzen
+        # Versuche direkten Tidal-Link; als Fallback linkhop nutzen
         if "tidal.com" in url or url.startswith("tidal://"):
             link = url
         else:

@@ -25,9 +25,9 @@ https://github.com/SpotifyNutzeer/streamcontroller-tidal
 | Volume Up | Increase Tidal volume |
 | Volume Down | Decrease Tidal volume |
 | Copy Tidal Link | Copy the Tidal URL of the current track to clipboard |
-| Copy Spotify Link | Copy a Spotify link for the current track (via Odesli) |
-| Copy YouTube Music Link | Copy a YouTube Music link for the current track (via Odesli) |
-| Copy YouTube Link | Copy a YouTube link for the current track (via Odesli) |
+| Copy Spotify Link | Copy a Spotify link for the current track (via linkhop) |
+| Copy YouTube Music Link | Copy a YouTube Music link for the current track (via linkhop) |
+| Copy YouTube Link | Copy a YouTube link for the current track (via linkhop) |
 
 ## Installation
 
@@ -43,7 +43,7 @@ Then restart StreamController.
 ## Attribution
 
 Inspired by [streamdeck-tidal-plugin](https://github.com/SpotifyNutzeer/streamdeck-tidal-plugin).
-Cross-platform music links provided by [Odesli / song.link](https://odesli.co).
+Cross-platform music links provided by [linkhop](https://linkhop.paul.wtf).
 
 ## License
 

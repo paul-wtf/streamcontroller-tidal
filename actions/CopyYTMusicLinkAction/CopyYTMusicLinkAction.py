@@ -8,7 +8,7 @@ ASSETS = os.path.join(os.path.dirname(__file__), "..", "..", "assets")
 
 
 class CopyYTMusicLinkAction(ActionBase):
-    """Kopiert den YouTube Music-Link des aktuellen Tracks (via Odesli) in die Zwischenablage."""
+    """Kopiert den YouTube Music-Link des aktuellen Tracks (via linkhop) in die Zwischenablage."""
 
     def on_ready(self):
         self.set_media(media_path=os.path.join(ASSETS, "copy_ytmusic.svg"), size=0.75)

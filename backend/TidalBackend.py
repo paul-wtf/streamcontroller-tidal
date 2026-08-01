@@ -40,7 +40,7 @@ class TidalBackend:
     """
 
     WS_URL = "ws://127.0.0.1:24123/"
-    ODESLI_URL = "https://api.song.link/v1-alpha.1/links"
+    LINKHOP_URL = "https://linkhop.paul.wtf/api/v1/convert"
     RECONNECT_DELAY = 5
     # Felder, die _handle_message tatsaechlich auswertet. Wir abonnieren nur
     # diese, damit der Server nicht dauerhaft die komplette playQueue
@@ -279,15 +279,17 @@ class TidalBackend:
         return fpath
 
     # ------------------------------------------------------------------ #
-    # Odesli / song.link – plattformübergreifende Links                   #
+    # linkhop – plattformübergreifende Links                              #
     # ------------------------------------------------------------------ #
 
-    # Odesli-Provider-Keys
+    # linkhop-Service-IDs. linkhop kennt kein reines YouTube – 'youtube'
+    # wird über den YouTube-Music-Link abgebildet und dessen URL
+    # (music.youtube.com/watch?v=...) auf www.youtube.com umgeschrieben.
     PLATFORM_KEYS = {
         "tidal":   "tidal",
         "spotify": "spotify",
-        "ytmusic": "youtubeMusic",
-        "youtube": "youtube",
+        "ytmusic": "youtube_music",
+        "youtube": "youtube_music",
     }
 
     def get_platform_link(self, platform: str) -> str | None:
@@ -301,21 +303,31 @@ class TidalBackend:
             return None
         try:
             resp = requests.get(
-                self.ODESLI_URL,
-                params={"url": url, "userCountry": "DE"},
+                self.LINKHOP_URL,
+                params={"url": url},
                 timeout=10,
             )
             resp.raise_for_status()
             data = resp.json()
             key = self.PLATFORM_KEYS.get(platform, platform)
-            links = data.get("linksByPlatform", {})
-            entry = links.get(key)
-            if entry:
-                return entry.get("url")
-            logger.warning(f"TidalBackend: Plattform '{platform}' nicht in Odesli-Antwort gefunden")
-            return None
+
+            # Der Quelldienst taucht nicht in 'targets' auf, sondern nur
+            # als kanonische URL in 'source'.
+            source = data.get("source", {})
+            if source.get("service") == key:
+                link = source.get("url")
+            else:
+                entry = data.get("targets", {}).get(key)
+                if not entry or entry.get("status") not in ("ok", "ok_low"):
+                    logger.warning(f"TidalBackend: Plattform '{platform}' nicht in linkhop-Antwort gefunden")
+                    return None
+                link = entry.get("url")
+
+            if link and platform == "youtube":
+                link = link.replace("music.youtube.com", "www.youtube.com")
+            return link
         except Exception as exc:
-            logger.error(f"TidalBackend: Odesli-Fehler – {exc}")
+            logger.error(f"TidalBackend: linkhop-Fehler – {exc}")
             return None
 
     # ------------------------------------------------------------------ #
