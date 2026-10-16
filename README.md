@@ -1,14 +1,18 @@
 # Tidal Controller — StreamController Plugin
 
 Control Tidal playback from your [StreamController](https://github.com/core447/StreamController)
-deck. Communication goes through TidaLuna's local WebSocket API, so no Tidal API key is needed.
+deck. The plugin talks to the local HTTP/WebSocket API of the TidaLuna plugin TidalAPI, so you
+don't need a Tidal API key.
 
 https://github.com/SpotifyNutzeer/streamcontroller-tidal
 
 ## Requirements
 
 - [TidaLuna](https://github.com/Inrixia/TidaLuna) installed in Tidal desktop
-- The **`@vmohammad/api`** plugin enabled inside TidaLuna (exposes the local WebSocket API this plugin talks to)
+- The **TidalAPI** plugin from [FireWall-code/TidaLuna-Plugins](https://github.com/FireWall-code/TidaLuna-Plugins), enabled in TidaLuna. To install it, open Luna Settings → Plugin Store → Install from URL and paste
+  `https://github.com/FireWall-code/TidaLuna-Plugins/releases/download/latest/store.json`.
+  Leave its auth token setting empty, since this plugin does not send a token yet.
+- If the deprecated `@vmohammad/api` plugin is still installed, disable it. Both listen on port 24123.
 - StreamController ≥ 1.1.1-alpha
 - Python packages `websockets` and `requests` (installed automatically by StreamController)
 
