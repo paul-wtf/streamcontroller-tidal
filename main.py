@@ -26,7 +26,7 @@ from actions.VolumeDownAction.VolumeDownAction import VolumeDownAction
 class TidalControllerPlugin(PluginBase):
     """
     StreamController-Plugin für Tidal-Musiksteuerung via TidaLuna WebSocket-API.
-    Benötigt TidaLuna mit aktiviertem @vmohammad/api Plugin.
+    Benötigt TidaLuna mit aktiviertem TidalAPI-Plugin.
     """
 
     def __init__(self):
@@ -134,7 +134,7 @@ class TidalControllerPlugin(PluginBase):
 
         self.register(
             plugin_name="Tidal Controller",
-            github_repo="https://github.com/SpotifyNutzeer/streamcontroller-tidal",
+            github_repo="https://github.com/paul-wtf/streamcontroller-tidal",
             plugin_version="1.0.0",
             app_version="1.5.0-beta",
         )

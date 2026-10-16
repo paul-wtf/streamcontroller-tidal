@@ -32,7 +32,7 @@ class TidalState:
 
 class TidalBackend:
     """
-    Verwaltet die WebSocket-Verbindung zu TidaLuna (@vmohammad/api Plugin).
+    Verwaltet die WebSocket-Verbindung zum TidaLuna-Plugin TidalAPI.
     Endpoint: ws://127.0.0.1:24123/
 
     Gemeinsame Instanz für alle Actions, die über Callbacks über
@@ -78,30 +78,22 @@ class TidalBackend:
                     self._ws = ws
                     self.state.connected = True
                     logger.info("TidalBackend: WebSocket verbunden")
-                    # all:True liefert beim Verbinden einmalig einen
-                    # vollstaendigen Snapshot, damit die Kachel sofort den
-                    # aktuellen Track zeigt. Direkt nach dem ersten Snapshot
-                    # schalten wir per all:False auf SUBSCRIBE_FIELDS herunter,
-                    # damit der Server nicht dauerhaft die playQueue streamt.
-                    await ws.send(json.dumps({"action": "subscribe", "all": True, "fields": []}))
+                    await ws.send(json.dumps({
+                        "action": "subscribe",
+                        "all": False,
+                        "fields": self.SUBSCRIBE_FIELDS,
+                    }))
+                    await ws.send(json.dumps({"action": "getPlayer"}))
                     self._notify()
 
-                    downgraded = False
                     async for raw in ws:
                         try:
                             data = json.loads(raw)
                         except json.JSONDecodeError:
                             logger.warning(f"TidalBackend: Ungültige JSON-Nachricht: {raw!r}")
                             continue
-                        self._handle_message(data)
-                        # Nach dem ersten echten Snapshot den Firehose abschalten.
-                        if not downgraded and isinstance(data, dict) and data.get("type") == "update":
-                            await ws.send(json.dumps({
-                                "action": "subscribe",
-                                "all": False,
-                                "fields": self.SUBSCRIBE_FIELDS,
-                            }))
-                            downgraded = True
+                        if isinstance(data, dict):
+                            self._handle_message(data)
 
             except Exception as exc:
                 logger.warning(f"TidalBackend: Verbindungsfehler – {exc}")
@@ -117,21 +109,28 @@ class TidalBackend:
     # ------------------------------------------------------------------ #
 
     def _handle_message(self, data: dict):
-        # TidaLuna sendet je nach Subscription zwei Formen:
-        #   all:true  -> {"type":"update","all":true,"fields":{ ... }}        (Snapshot)
-        #   all:false -> {"type":"update","all":false,"field":"x","value":y}  (Einzelfeld)
-        # Wir abonnieren nach dem ersten Snapshot per all:false, deshalb MUESSEN
-        # beide Formen behandelt werden – sonst werden alle weiteren Updates
-        # ignoriert und die Kachel friert nach dem Start ein.
-        if data.get("type") != "update":
-            return
+        if data.get("type") == "ok" and data.get("action") == "getPlayer":
+            self._apply_fields(self._player_to_fields(data.get("data") or {}))
+        elif data.get("type") == "update" and "field" in data:
+            self._apply_fields({data["field"]: data.get("value")})
 
-        if "fields" in data:
-            f = data.get("fields") or {}
-        elif "field" in data:
-            f = {data["field"]: data.get("value")}
-        else:
-            f = {}
+    @staticmethod
+    def _player_to_fields(player: dict) -> dict:
+        item = player.get("item") or {}
+        artists = item.get("artists") or []
+        fields = {
+            "playing": player.get("is_playing"),
+            "shuffle": player.get("shuffle_state"),
+            "repeatMode": player.get("repeat_mode"),
+            "volume": player.get("volume"),
+            "track": {"title": item.get("name"), "url": item.get("url")},
+            "artist": artists[0] if artists else None,
+            "album": item.get("album"),
+            "coverUrl": item.get("cover"),
+        }
+        return {k: v for k, v in fields.items() if v is not None}
+
+    def _apply_fields(self, f: dict):
         changed = False
 
         # Wiedergabestatus: f["playing"] ist ein boolean
