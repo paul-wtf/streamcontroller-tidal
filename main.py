@@ -134,7 +134,7 @@ class TidalControllerPlugin(PluginBase):
 
         self.register(
             plugin_name="Tidal Controller",
-            github_repo="https://github.com/SpotifyNutzeer/streamcontroller-tidal",
+            github_repo="https://github.com/paul-wtf/streamcontroller-tidal",
             plugin_version="1.0.0",
             app_version="1.5.0-beta",
         )

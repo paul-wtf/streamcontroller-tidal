@@ -4,7 +4,7 @@ Control Tidal playback from your [StreamController](https://github.com/core447/S
 deck. The plugin talks to the local HTTP/WebSocket API of the TidaLuna plugin TidalAPI, so you
 don't need a Tidal API key.
 
-https://github.com/SpotifyNutzeer/streamcontroller-tidal
+https://github.com/paul-wtf/streamcontroller-tidal
 
 ## Requirements
 
