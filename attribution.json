@@ -2,7 +2,6 @@
     "attributions": [
         {
             "name": "streamdeck-tidal-plugin",
-            "url": "https://github.com/SpotifyNutzeer/streamdeck-tidal-plugin",
             "license": "MIT",
             "description": "Inspiration und API-Referenz für TidaLuna WebSocket-Integration"
         },
