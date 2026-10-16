@@ -270,8 +270,9 @@ class TidalBackend:
             try:
                 resp = requests.get(url, timeout=10)
                 resp.raise_for_status()
-                with open(fpath, "wb") as f:
+                with tempfile.NamedTemporaryFile(dir=self._cover_cache_dir, delete=False) as f:
                     f.write(resp.content)
+                os.replace(f.name, fpath)
             except Exception as exc:
                 logger.warning(f"TidalBackend: Cover-Art konnte nicht heruntergeladen werden – {exc}")
                 return None
