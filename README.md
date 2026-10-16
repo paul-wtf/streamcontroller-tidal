@@ -46,7 +46,7 @@ Then restart StreamController.
 
 ## Attribution
 
-Inspired by [streamdeck-tidal-plugin](https://github.com/SpotifyNutzeer/streamdeck-tidal-plugin).
+Inspired by streamdeck-tidal-plugin.
 Cross-platform music links provided by [linkhop](https://linkhop.paul.wtf).
 
 ## License
