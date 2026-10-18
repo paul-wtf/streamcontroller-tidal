@@ -79,6 +79,10 @@ class TrackTile:
         self._render()
         self._ensure_ticker()
 
+    def invalidate(self):
+        with self._lock:
+            self._source = None
+
     def stop(self):
         self._stop.set()
 

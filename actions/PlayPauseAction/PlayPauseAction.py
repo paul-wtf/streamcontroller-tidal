@@ -13,8 +13,11 @@ class PlayPauseAction(ActionBase):
     """Play/Pause-Taste – zeigt beim Spielen Cover-Art und Songtitel an."""
 
     def on_ready(self):
+        # StreamController's default on_update() calls on_ready() again on every redraw.
+        if getattr(self, "_tile", None) is None:
+            self._tile = TrackTile(self)
+        self._tile.invalidate()
         self._last_cover_url = None
-        self._tile = TrackTile(self)
         self.set_label("")
         self._update_ui(self.plugin_base.backend.state)
         self.plugin_base.backend.add_callback(self._on_state_change)
